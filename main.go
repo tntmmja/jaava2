@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/tntmmja/jaava2/backend/config"
 	"github.com/tntmmja/jaava2/backend/data"
-	"github.com/tntmmja/jaava2/backend/handlers"
-	"github.com/tntmmja/jaava2/backend/utils"
+
+	//"github.com/tntmmja/jaava2/backend/handlers"
+	//"github.com/tntmmja/jaava2/backend/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -25,7 +27,7 @@ var upgrader = websocket.Upgrader{
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("indexhandler", r.RequestURI)
-	fmt.Fprintf(w, "testing backend to frontend")
+	//fmt.Fprintf(w, "testing backend to frontend")
 	tmpl, err := template.ParseFiles("./clientfrontend/templates/index.html")
 	if err != nil {
 		log.Println(err)
@@ -73,6 +75,6 @@ var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/socket", handleWebSocket)
 	router.HandleFunc("/", IndexHandler)
 	router.HandleFunc("/register", data.RegisterHandler)
-	router.HandleFunc("/login", handlers.LoginHandler)
-	router.HandleFunc("/loggedUser", handlers.LoggedHandler)
+	//router.HandleFunc("/login", handlers.LoginHandler)
+	//router.HandleFunc("/loggedUser", handlers.LoggedHandler)
 }

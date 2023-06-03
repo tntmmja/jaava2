@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/tntmmja/jaava2/config"
+	"github.com/tntmmja/jaava2/backend/config"
 )
 
 type User struct {
