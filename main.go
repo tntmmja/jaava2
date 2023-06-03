@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/tntmmja/jaava2/backend/data"
+	"github.com/tntmmja/jaava2/backend/handlers"
+	"github.com/tntmmja/jaava2/backend/utils"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
@@ -55,6 +59,8 @@ func main() {
 	SetRoutes(r)
 
 	http.Handle("/", r)
+	config.DBConn()
+
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:8083"},
 	})
@@ -63,8 +69,10 @@ func main() {
 	log.Fatal(http.ListenAndServe("localhost:8082", handler))
 }
 
-func SetRoutes(router *mux.Router) {
+var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/socket", handleWebSocket)
 	router.HandleFunc("/", IndexHandler)
-	// Add more routes as needed
+	router.HandleFunc("/register", data.RegisterHandler)
+	router.HandleFunc("/login", handlers.LoginHandler)
+	router.HandleFunc("/loggedUser", handlers.LoggedHandler)
 }
