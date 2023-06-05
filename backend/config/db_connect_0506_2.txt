@@ -1,0 +1,117 @@
+package data
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/tntmmja/jaava2/backend/config"
+)
+
+type User struct {
+	ID          int
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Age         int    `json:"age"`
+	Gender      string `json:"gender"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	CreatedDate float64
+	SessionID   string
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("submittisin register")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	fmt.Println("Request Method:", r.Method)
+
+	 // Log the request body
+	 body, err := ioutil.ReadAll(r.Body)
+	 if err != nil {
+		 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		 return
+	 }
+	 log.Printf("Request body: %s", body)
+ 
+	 // Reset the request body for decoding
+	 r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+ 
+	 // Decode the JSON data
+	 fmt.Println("Decoding JSON data")
+	 var user User
+
+	 
+	 err = json.NewDecoder(r.Body).Decode(&user)
+	 if err != nil {
+		log.Println("Error decoding JSON data:", err)
+		 http.Error(w, "Bad Request", http.StatusBadRequest)
+		 return
+	 }
+
+	fmt.Println("RegisterHandler: Decoded user:", user)
+
+	// Generate password hash
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("uuseriparool", user.Password)
+	// Create current timestamp
+	createdDate := time.Now().Unix()
+
+	// Establish a database connection
+	db, err := config.DBConn()
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Insert user data into the database
+	stmt, err := db.Prepare("INSERT INTO user (firstname, lastname, age, gender, username, email, password, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(user.FirstName, user.LastName, user.Age, user.Gender, user.Username, user.Email, hash, createdDate)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Get the auto-generated user ID
+	userID, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"message": "Registration successful",
+		"userID":  userID,
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}

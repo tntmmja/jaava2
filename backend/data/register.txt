@@ -31,7 +31,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Read and log the request body
-	// can delete from 1 here
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -39,7 +38,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Request body: %s", body)
-	// to 1 here delete
 
 	// Decode the JSON data
 	var user User
@@ -51,18 +49,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Decoded user:", user)
-
-	// Check if nickname is already taken
-	if isNicknameTaken(user.Nickname) {
-		http.Error(w, "Nickname is already taken", http.StatusBadRequest)
-		return
-	}
-
-	// Check if email is already taken
-	if isEmailTaken(user.Email) {
-		http.Error(w, "Email is already taken", http.StatusBadRequest)
-		return
-	}
 
 	// Generate password hash
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -110,50 +96,4 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
-}
-
-// Check if the nickname is already taken
-func isNicknameTaken(nickname string) bool {
-	// Check the following code for database logic
-
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
-		return true
-	}
-	defer db.Close()
-	// Perform the query and check if the nickname exists
-
-	row := db.QueryRow("SELECT COUNT(*) FROM user WHERE nickname = ?", nickname)
-	var count int
-	err = row.Scan(&count)
-	if err != nil {
-		log.Println(err)
-		return true
-	}
-	return count > 0
-	// Always return false (nickname is not taken)
-	return false
-}
-
-// Check if the email is already taken
-func isEmailTaken(email string) bool {
-	// Check the following code for database logic
-
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
-		return true
-	}
-	defer db.Close()
-	// Perform the query and check if the email exists
-	row := db.QueryRow("SELECT COUNT(*) FROM user WHERE email = ?", email)
-	var count int
-	err = row.Scan(&count)
-	if err != nil {
-		log.Println(err)
-		return true
-	}
-	return count > 0
-	return false
 }
