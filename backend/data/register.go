@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/tntmmja/jaava2/backend/config"
 	"golang.org/x/crypto/bcrypt"
@@ -55,13 +56,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if nickname is already taken
 	if isNicknameTaken(user.Nickname) {
 		http.Error(w, "Nickname is already taken", http.StatusBadRequest)
-		return
+        return
 	}
 
 	// Check if email is already taken
 	if isEmailTaken(user.Email) {
 		http.Error(w, "Email is already taken", http.StatusBadRequest)
-		return
+        return
 	}
 
 	// Generate password hash
@@ -100,15 +101,17 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"message": "Registration successful",
 	}
+	 // Encode the response as JSON
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
+ 	// Set the response headers
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	// Write the JSON response
 	w.Write(jsonResponse)
 }
 
@@ -156,4 +159,26 @@ func isEmailTaken(email string) bool {
 	}
 	return count > 0
 	return false
+}
+
+func renderRegistrationForm(w http.ResponseWriter, errorMessage string) {
+	// Read the contents of the registration form HTML template file
+	templateFile := "./clientfrontend/templates/register.html"
+	templateBytes, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Convert the template bytes to a string
+	templateStr := string(templateBytes)
+
+	// Replace the placeholder in the template with the error message
+	renderedTemplate := strings.Replace(templateStr, "{{ErrorMessage}}", errorMessage, 1)
+
+	// Write the rendered template to the response
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(renderedTemplate))
 }

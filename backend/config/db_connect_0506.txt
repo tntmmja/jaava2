@@ -18,7 +18,7 @@ var (
 // videos https://www.youtube.com/watch?v=1E_YycpCsXw
 // oli veel Open all teise positsioonina l]pus mingi pikem asi charset utf jne
 func DBConn() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./rltforum.db")
+	db, err := sql.Open("sqlite3", "./backend/rltforum.db")
 	if err != nil {
 		return nil, err
 	}

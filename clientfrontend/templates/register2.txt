@@ -35,11 +35,13 @@
     <div id="success-message" style="display: none;">
         <p>Registration successful!</p>
         <p>Please login to continue.</p>
+        <!-- <button onclick="redirectToLogin()">Go to Login Page</button> -->
     </div>
-    
+
     <div id="error-message" style="display: none; color: red;"></div> <!-- Added error message div -->
 
-    <button onclick="goToLogin()">Login</button>
+
+<button onclick="goToLogin()">Login</button>
 
     <script>
         // JavaScript code for handling form submission
@@ -71,17 +73,17 @@
                 if (response.ok) {
                     console.log("Registration successful");
                     showSuccessMessage();
+                    // Redirect to a success page or perform other actions
                 } else {
-                    console.error("Nickname or email already taken");
-                    showErrorMessage("Nickname or email already taken"); // Show error message
+                    console.error("Registration failed");
+                    // Handle registration failure
                 }
             })
             .catch(function(error) {
-                console.error("Nickname or email already taken", error);
-                showErrorMessage("Nickname or email already taken"); // Show error message
+                console.error("Registration failed", error);
+                // Handle registration failure
             });
         }
-        
         function showSuccessMessage() {
             var form = document.getElementById("registration-form");
             var successMessage = document.getElementById("success-message");
@@ -89,12 +91,15 @@
             form.style.display = "none";
             successMessage.style.display = "block";
         }
-        
         function showErrorMessage(message) {
             var errorMessage = document.getElementById("error-message");
             errorMessage.innerText = message;
             errorMessage.style.display = "block";
         }
+
+        // function redirectToLogin() {
+        //     window.location.href = "/login";
+        // }
 
         function goToLogin() {
             // Redirect to the login page

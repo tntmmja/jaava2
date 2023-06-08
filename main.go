@@ -9,7 +9,7 @@ import (
 	"github.com/tntmmja/jaava2/backend/config"
 	"github.com/tntmmja/jaava2/backend/data"
 
-	//"github.com/tntmmja/jaava2/backend/handlers"
+	"github.com/tntmmja/jaava2/backend/handlers"
 	//"github.com/tntmmja/jaava2/backend/utils"
 	_ "github.com/mattn/go-sqlite3"
 
@@ -61,6 +61,25 @@ func showRegistrationForm(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./clientfrontend/templates/register.html")
 }
 
+func showLoginForm(w http.ResponseWriter, r *http.Request) {
+    // Load the login form template
+    tpl, err := template.ParseFiles("./clientfrontend/templates/login.html")
+    if err != nil {
+        log.Println(err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    // Render the login form template
+    err = tpl.Execute(w, nil)
+    if err != nil {
+        log.Println(err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+}
+
+
 func main() {
 	r := mux.NewRouter()
 	SetRoutes(r)
@@ -96,6 +115,7 @@ var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/", IndexHandler)
 	router.HandleFunc("/register", data.RegisterHandler).Methods(("POST"))
 	router.HandleFunc("/register", showRegistrationForm).Methods("GET")
-	//router.HandleFunc("/login", handlers.LoginHandler)
+	router.HandleFunc("/login", handlers.LoginHandler).Methods(("POST"))
+	router.HandleFunc("/login", showLoginForm).Methods("GET")
 	//router.HandleFunc("/loggedUser", handlers.LoggedHandler)
 }

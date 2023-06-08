@@ -6,7 +6,9 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
+var (
+	DbConn *sql.DB
+)
 func DBConn() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./backend/rltforum.db")
 	if err != nil {
@@ -14,4 +16,13 @@ func DBConn() (*sql.DB, error) {
 	}
 	fmt.Println("Connected to the database!")
 	return db, nil
+}
+// the purpose of this FILE is to return a DbConn variable
+// which will help us to talk to database, other files can
+// talk to database easily.
+// dont exactly get the polint of this function
+func GetDB() *sql.DB {
+	fmt.Println("DbConn ka!!")
+	return DbConn
+
 }
