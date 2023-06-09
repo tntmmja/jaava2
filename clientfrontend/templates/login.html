@@ -45,6 +45,7 @@
                 if (response.ok) {
                     console.log("Login successful");
                     // Redirect to a success page or perform other actions
+                    window.location.href = "/feed"; // Redirect to the feed page
                 } else {
                     console.error("Login failed");
                     showErrorMessage();

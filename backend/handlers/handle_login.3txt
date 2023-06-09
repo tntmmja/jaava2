@@ -55,6 +55,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Parameters can't be empty", http.StatusBadRequest)
 		return
 	}
+
 	// Perform database operations to validate login credentials
 	db, err := config.DBConn()
 	if err != nil {
@@ -107,6 +108,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
 		fmt.Println("Invalid password")
 		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		return
 	} else {
 		sessionID := uuid.New().String()
 		fmt.Println("loginsessionid1", sessionID)
@@ -126,30 +128,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Add("Set-Cookie", "mycookie="+sessionID+"; Max-Age=300")
-		
-		fmt.Println("suunaloggeduser")
-		
+
 		fmt.Println("Redirecting to the feed page")
 		http.Redirect(w, r, "/feed", http.StatusSeeOther)
 		return
 	}
-
-	var resp = MyResponse{
-		Success:   true,
-		SessionID: login.SessionID, // Update with the correct variable name
-	}
-
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
-	}
-	// Write the response body
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResp)
-}
-
-type MyResponse struct {
-	Success   bool   `json:"success"`
-	SessionID string `json:"sessionID"`
 }

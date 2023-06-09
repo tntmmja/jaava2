@@ -1,0 +1,38 @@
+package handlers
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/tntmmja/jaava2/backend/data"
+)
+
+// FilterHandler filters the posts based on the provided criteria
+func FilterHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract the filter criteria from the URL query parameters
+	categories := r.URL.Query().Get("categories")
+	createdBy := r.URL.Query().Get("createdBy")
+	likedBy := r.URL.Query().Get("likedBy")
+
+	// Apply the filters to retrieve the filtered posts from the database
+	filteredPosts := data.FilterPosts(categories, createdBy, likedBy)
+
+	// Convert the filtered posts data to JSON
+	jsonData, err := json.Marshal(filteredPosts)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the response headers and write the JSON data
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+}

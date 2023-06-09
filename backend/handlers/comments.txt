@@ -1,0 +1,44 @@
+package handlers
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/tntmmja/jaava2/backend/data"
+)
+
+// CreateCommentHandler handles the creation of a new comment
+func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Read and parse the request body
+	var comment data.Comment
+	err := json.NewDecoder(r.Body).Decode(&comment)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	// Perform necessary operations to save the comment
+	// ...
+
+	// Return a success response
+	response := map[string]interface{}{
+		"message": "Comment created successfully",
+	}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}

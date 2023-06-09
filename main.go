@@ -117,5 +117,18 @@ var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/register", showRegistrationForm).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods(("POST"))
 	router.HandleFunc("/login", showLoginForm).Methods("GET")
+	router.HandleFunc("/create-post", handlers.CreatePostHandler).Methods("POST")
+	// router.HandleFunc("/create-comment", handlers.CreateCommentHandler).Methods("POST")
+	 router.HandleFunc("/feed", handlers.FeedHandler).Methods("GET")
+	// router.HandleFunc("/filter", handlers.FilterHandler).Methods("GET") // Add this line for the FilterHandler
+	router.HandleFunc("/post/{id}", handlers.PostHandler).Methods("GET")
+	// router.HandleFunc("/like-post/{id}", handlers.LikePostHandler).Methods("POST")
+	// router.HandleFunc("/like-comment/{id}", handlers.LikeCommentHandler).Methods("POST")
+	// router.HandleFunc("/dislike-post/{id}", handlers.DislikePostHandler).Methods("POST")
+	// router.HandleFunc("/dislike-comment/{id}", handlers.DislikeCommentHandler).Methods("POST")
+	// router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
+
+
+
 	//router.HandleFunc("/loggedUser", handlers.LoggedHandler)
 }
