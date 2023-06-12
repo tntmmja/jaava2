@@ -7,12 +7,31 @@
 </head>
 <body>
     <h1>Feed</h1>
-
+    <button id="create-post-button">Create Post</button>
+    <div id="create-post-container" style="display: none;">
+        <h2>Create a New Post</h2>
+        <form id="create-post-form">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title"><br><br>
+            
+            <label for="text">Text:</label>
+            <textarea id="text" name="text"></textarea><br><br>
+            
+            <input type="hidden" id="user-id" name="user_id" value=""><!-- Add this hidden field -->
+            
+            <input type="submit" value="Create">
+        </form>
+    </div>
+    
     <div id="posts">
-        <!-- Display the posts dynamically here -->
+        {{range .Posts}}
+        <p>Category: {{.Title}}</p>
+        <p>{{.Text}}</p>
+        {{end}}
     </div>
 
     <script src="/static/main.js"></script>
+    <script src="/static/write_post.js"></script>
     <script src="/static/feed.js"></script>
 </body>
 </html>

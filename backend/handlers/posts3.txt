@@ -12,11 +12,6 @@ import (
 
 // CreatePostHandler handles the creation of a new post
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	// Retrieve the post data from the request body
 	var post data.Post
 	err := json.NewDecoder(r.Body).Decode(&post)
@@ -25,22 +20,6 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-
-	// Set the user ID for the post
-	sessionID := findSessionCookie(r)
-	if sessionID == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, err := data.GetUserIDBySessionID(sessionID)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	post.UserID = userID
 
 	// Create the post in the database
 	err = data.CreatePost(&post)
@@ -102,7 +81,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-// FeedHandler retrieves the posts to display in the feed
+// / FeedHandler retrieves the posts to display in the feed
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -122,16 +101,49 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Pass the posts data and other necessary data to the template
-		data := struct {
-			Posts []data.Post
-			Title string
-		}{
-			Posts: posts,
-			Title: "Feed",
+		// // Pass the posts data to the template
+		// err = tmpl.Execute(w, struct {
+		// 	Posts []data.Post
+		// }{
+		// 	Posts: posts,
+		// })
+		// if err != nil {
+		// 	log.Println(err)
+		// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		// 	return
+		// }
+
+		// Pass the data to the template
+		// it was intebded err = tmpl.Execute(w, posts) but it did not display posts
+		err = tmpl.Execute(w, nil)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
 		}
 
-		err = tmpl.Execute(w, data)
+		// Getting posts from databas and displaying
+
+		///////1
+		// jsonData, err := json.Marshal(posts)
+		// if err != nil {
+		//     log.Println(err)
+		//     http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		//     return
+		// }
+
+		//  w.Header().Set("Content-Type", "application/json")
+		// // w.WriteHeader(http.StatusOK)
+		// w.Write(jsonData)
+		///////1
+		// Set the Content-Type header to application/json
+		w.Header().Set("Content-Type", "application/json")
+
+		// Create a JSON encoder for the response writer
+		encoder := json.NewEncoder(w)
+
+		// Encode the posts data into the response stream
+		err = encoder.Encode(posts)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -156,11 +168,14 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Return a success response
+		//Return a success response
 		response := map[string]interface{}{
 			"message": "Post created successfully",
 		}
 
+
+
+		/////2
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
 			log.Println(err)
@@ -171,16 +186,10 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(jsonResponse)
+///////2
 
+w.WriteHeader(http.StatusCreated)
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
-}
-
-func findSessionCookie(r *http.Request) string {
-	cookie, err := r.Cookie("mycookie")
-	if err != nil {
-		return ""
-	}
-	return cookie.Value
 }

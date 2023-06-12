@@ -82,7 +82,6 @@ func GetPosts() ([]Post, error) {
 	return posts, nil
 }
 
-
 // GetPost retrieves a post from the database by its ID
 func GetPost(postID string) (*Post, error) {
 	db, err := config.DBConn()
@@ -101,4 +100,24 @@ func GetPost(postID string) (*Post, error) {
 	}
 
 	return &post, nil
+}
+
+// GetUserIDBySessionID retrieves the user ID associated with a session ID from the database
+func GetUserIDBySessionID(sessionID string) (int, error) {
+	db, err := config.DBConn()
+	if err != nil {
+		return 0, err
+	}
+	defer db.Close()
+
+	var userID int
+	err = db.QueryRow("SELECT id FROM user WHERE sessionID = ?", sessionID).Scan(&userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil // Session ID not found
+		}
+		return 0, err
+	}
+
+	return userID, nil
 }

@@ -7,29 +7,20 @@
 </head>
 <body>
     <h1>Create Post</h1>
-    <form id="create-post-form">
-        <div>
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div>
-            <label for="content">Content:</label>
-            <textarea id="content" name="content" rows="5" required></textarea>
-        </div>
-        <div>
-            <label for="categories">Categories:</label>
-            <select id="categories" name="categories" multiple required>
-                <option value="category1">Category 1</option>
-                <option value="category2">Category 2</option>
-                <option value="category3">Category 3</option>
-            </select>
-        </div>
-        <div>
-            <input type="submit" value="Create">
-        </div>
+    <form id="create-post-form" method="POST" action="/create-post">
+        <label for="post-title">Title:</label>
+        <input type="text" id="post-title" name="title"><br><br>
+        
+        <label for="post-text">Text:</label>
+        <textarea id="post-text" name="text"></textarea><br><br>
+        
+        <label for="post-category">Category:</label>
+        <input type="text" id="post-category" name="category"><br><br>
+        
+        <input type="submit" value="Create">
     </form>
 
     <script src="/static/main.js"></script>
-    <script src="/static/create_post.js"></script>
+    <script src="/static/write_post.js"></script>
 </body>
 </html>

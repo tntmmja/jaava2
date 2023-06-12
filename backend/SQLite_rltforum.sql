@@ -33,8 +33,9 @@ sessionID TEXT);
 -- kustutab tabeli posts
 -- DROP TABLE IF EXISTS user;
 
-DELETE FROM user WHERE id BETWEEN 2 AND 4;
+-- DELETE FROM user WHERE id BETWEEN 2 AND 4;
 
+INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
 
 -- ALTER TABLE user RENAME COLUMN username TO nickname;
 

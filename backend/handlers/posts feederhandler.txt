@@ -1,0 +1,47 @@
+func FeedHandler(w http.ResponseWriter, r *http.Request) {
+    switch r.Method {
+    case http.MethodGet:
+        // Retrieve the posts from the database
+        posts, err := data.GetPosts()
+		if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+        jsonData, err := json.Marshal(posts)
+        if err != nil {
+            log.Println(err)
+            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            return
+        }
+        
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusOK)
+        w.Write(jsonData)
+    
+    case http.MethodPost:
+        // Handle POST request to create a new post
+        var post data.Post
+        err := json.NewDecoder(r.Body).Decode(&post)
+        if err != nil {
+            log.Println(err)
+            http.Error(w, "Bad Request", http.StatusBadRequest)
+            return
+        }
+        
+        // Create the post in the database
+        err = data.CreatePost(&post)
+        if err != nil {
+            log.Println(err)
+            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            return
+        }
+        
+        w.WriteHeader(http.StatusCreated)
+    
+    default:
+        http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+    }
+}
+

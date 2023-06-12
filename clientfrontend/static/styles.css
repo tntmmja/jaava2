@@ -39,3 +39,17 @@ input[type="password"] {
     
     margin-bottom: 10px;
 }
+#create-post-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+#create-post-button:hover {
+    background-color: #0056b3;
+}
