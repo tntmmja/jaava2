@@ -1,20 +1,5 @@
 -- SQLite
 -- kasu kaivitamiseks parem klops - run selected query
-/*
-CREATE TABLE IF NOT EXISTS user (
-id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-firstname TEXT NOT NULL,
-lastname TEXT NOT NULL,
-age INTEGER NOT NULL,
-gender VARCHAR NOT NULL,
-username VARCHAR NOT NULL,
-email TEXT NOT NULL,
-password TEXT NOT NULL,
-createdDate REAL,
-sessionID TEXT);
-*/
-
-
 
 -- CREATE TABLE user (
 --     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,8 +20,8 @@ sessionID TEXT);
 
 -- DELETE FROM user WHERE id BETWEEN 2 AND 4;
 
-INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
-
+-- INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
+-- INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
 -- ALTER TABLE user RENAME COLUMN username TO nickname;
 
 -- Create posts table
@@ -53,16 +38,32 @@ INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 
 
 -- Create messages table
 -- CREATE TABLE messages (
---     id INTEGER PRIMARY KEY,
---     sender_id INTEGER,
---     receiver_id INTEGER,
---     message TEXT,
---     timestamp DATETIME,
---     FOREIGN KEY (sender_id) REFERENCES users (id),
---     FOREIGN KEY (receiver_id) REFERENCES users (id)
+--     id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+--     sender_id INTEGER NOT NULL,
+--     receiver_id INTEGER NOT NULL,
+--     message VARCHAR NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (sender_id) REFERENCES user (id),
+--     FOREIGN KEY (receiver_id) REFERENCES user (id)
 -- );
 
+-- Create comments table
+CREATE TABLE IF NOT EXISTS comments (
+	id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+	user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+	text VARCHAR NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	    FOREIGN KEY (user_id) REFERENCES user(id)
+    );
 
+
+-- deleted column dislike
+-- ALTER TABLE posts
+-- DROP COLUMN dislike;
+
+
+-- INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES (5, 1, 'five here', '2023-06-13 12:36:56');
 
 -- in case i need to change type of likes and dislikes
 -- ALTER TABLE posts MODIFY likes INT;

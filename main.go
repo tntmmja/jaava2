@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/tntmmja/jaava2/backend/config"
 	"github.com/tntmmja/jaava2/backend/data"
@@ -17,52 +16,9 @@ import (
 	//
 )
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("indexhandler", r.RequestURI)
-	//fmt.Fprintf(w, "testing backend to frontend")
-	tmpl, err := template.ParseFiles("./clientfrontend/templates/index.html")
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, nil)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	fmt.Println("indexhandle2")
-}
-	
-
-func showRegistrationForm(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./clientfrontend/templates/register.html")
-}
-
-func showLoginForm(w http.ResponseWriter, r *http.Request) {
-	// Load the login form template
-	tpl, err := template.ParseFiles("./clientfrontend/templates/login.html")
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	// Render the login form template
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-}
-	
-
-
 func main() {
 	r := mux.NewRouter()
 	SetRoutes(r)
-
 
 	// Create a new WebSocketManager instance
 	manager := config.NewWebSocketManager()
@@ -91,7 +47,6 @@ func main() {
 	WebSocketManager := config.NewWebSocketManager()
 	go WebSocketManager.Run()
 
-
 	//probably cors is not needed if vue is not used
 
 	// c := cors.New(cors.Options{
@@ -111,11 +66,11 @@ func main() {
 
 var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/socket", config.HandleWebSocket)
-	router.HandleFunc("/", IndexHandler)
+
 	router.HandleFunc("/register", data.RegisterHandler).Methods(("POST"))
-	router.HandleFunc("/register", showRegistrationForm).Methods("GET")
+
 	router.HandleFunc("/login", handlers.LoginHandler).Methods(("POST"))
-	router.HandleFunc("/login", showLoginForm).Methods("GET")
+
 	router.HandleFunc("/create-post", handlers.CreatePostHandler).Methods("POST")
 	// router.HandleFunc("/create-comment", handlers.CreateCommentHandler).Methods("POST")
 	router.HandleFunc("/feed", handlers.FeedHandler).Methods("GET", "POST")
