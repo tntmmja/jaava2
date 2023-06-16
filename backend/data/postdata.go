@@ -4,6 +4,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/tntmmja/jaava2/backend/config"
@@ -22,9 +23,9 @@ type Post struct {
 
 // CreatePost creates a new post in the database
 func CreatePost(post *Post) error {
-	db, err := config.DBConn()
-	if err != nil {
-		return err
+	db := config.GetDB()
+	if db == nil {
+		return errors.New("Failed to get database connection")
 	}
 	defer db.Close()
 
@@ -51,9 +52,9 @@ func CreatePost(post *Post) error {
 
 // GetPosts retrieves the posts from the database
 func GetPosts() ([]Post, error) {
-	db, err := config.DBConn()
-	if err != nil {
-		return nil, err
+	db := config.GetDB()
+	if db == nil {
+		return nil, errors.New("Failed to get database connection")
 	}
 	defer db.Close()
 
@@ -84,14 +85,14 @@ func GetPosts() ([]Post, error) {
 
 // GetPost retrieves a post from the database by its ID
 func GetPost(postID string) (*Post, error) {
-	db, err := config.DBConn()
-	if err != nil {
-		return nil, err
+	db := config.GetDB()
+	if db == nil {
+		return nil, errors.New("Failed to get database connection")
 	}
 	defer db.Close()
 
 	var post Post
-	err = db.QueryRow("SELECT id, user_id, title, text, created_at, like, dislike FROM posts WHERE id = ?", postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt, &post.Likes, &post.Dislikes)
+	err := db.QueryRow("SELECT id, user_id, title, text, created_at, like, dislike FROM posts WHERE id = ?", postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt, &post.Likes, &post.Dislikes)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Post not found
@@ -104,14 +105,14 @@ func GetPost(postID string) (*Post, error) {
 
 // GetUserIDBySessionID retrieves the user ID associated with a session ID from the database
 func GetUserIDBySessionID(sessionID string) (int, error) {
-	db, err := config.DBConn()
-	if err != nil {
-		return 0, err
+	db := config.GetDB()
+	if db == nil {
+		return 0, errors.New("Failed to get database connection")
 	}
 	defer db.Close()
 
 	var userID int
-	err = db.QueryRow("SELECT id FROM user WHERE sessionID = ?", sessionID).Scan(&userID)
+	err := db.QueryRow("SELECT id FROM user WHERE sessionID = ?", sessionID).Scan(&userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil // Session ID not found

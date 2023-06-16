@@ -1,0 +1,123 @@
+// handlers/messages.go
+// before 10 message loading implemented
+
+
+package handlers
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/tntmmja/jaava2/backend/data"
+)
+
+// SendMessageHandler handles the sending of a new message
+func SendMessageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Retrieve the message data from the request body
+	var message data.Message
+	err := json.NewDecoder(r.Body).Decode(&message)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	// Send the message
+	err = data.SendMessage(&message)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Return a success response
+	response := map[string]interface{}{
+		"message": "Message sent successfully",
+	}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}
+
+// GetMessagesHandler retrieves the messages for a specific user
+func GetMessagesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Retrieve the user ID from the URL parameters
+	userID := mux.Vars(r)["id"]
+
+	// Get the messages for the user
+	
+
+	messages, err := data.GetMessagesByUserID(userID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Return the messages as JSON response
+	jsonResponse, err := json.Marshal(messages)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}
+
+// GetMessageHandler retrieves a specific message by its ID
+func GetMessageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Retrieve the message ID from the URL parameters
+	messageID := mux.Vars(r)["id"]
+
+	// Get the message
+	message, err := data.GetMessage(messageID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	if message == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Return the message as JSON response
+	jsonResponse, err := json.Marshal(message)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}

@@ -74,9 +74,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Perform database operations to store user information
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
+	db := config.GetDB()
+	if db == nil {
+		log.Println("Failed to get database connection")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -118,47 +118,40 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 // Check if the nickname is already taken
 func isNicknameTaken(nickname string) bool {
 	// Check the following code for database logic
-
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
+	db := config.GetDB()
+	if db == nil {
+		log.Println("Failed to get database connection")
 		return true
 	}
-	defer db.Close()
 	// Perform the query and check if the nickname exists
-
-	row := db.QueryRow("SELECT COUNT(*) FROM user WHERE nickname = ?", nickname)
 	var count int
-	err = row.Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user WHERE nickname = ?", nickname).Scan(&count)
 	if err != nil {
 		log.Println(err)
 		return true
 	}
+
 	return count > 0
-	// Always return false (nickname is not taken)
-	return false
 }
 
 // Check if the email is already taken
 func isEmailTaken(email string) bool {
 	// Check the following code for database logic
 
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
+	db := config.GetDB()
+	if db == nil {
+		log.Println("Failed to get database connection")
 		return true
 	}
-	defer db.Close()
 	// Perform the query and check if the email exists
-	row := db.QueryRow("SELECT COUNT(*) FROM user WHERE email = ?", email)
 	var count int
-	err = row.Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user WHERE email = ?", email).Scan(&count)
 	if err != nil {
 		log.Println(err)
 		return true
 	}
+
 	return count > 0
-	return false
 }
 
 func renderRegistrationForm(w http.ResponseWriter, errorMessage string) {

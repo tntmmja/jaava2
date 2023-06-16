@@ -177,10 +177,14 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func findSessionCookie(r *http.Request) string {
-	cookie, err := r.Cookie("mycookie")
-	if err != nil {
-		return ""
-	}
-	return cookie.Value
-}
+
+
+
+//findSessionCookie is in handle_logged.go now
+// func findSessionCookie(r *http.Request) string {
+// 	cookie, err := r.Cookie("mycookie")
+// 	if err != nil {
+// 		return ""
+// 	}
+// 	return cookie.Value
+// }

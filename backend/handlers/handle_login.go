@@ -56,13 +56,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Perform database operations to validate login credentials
-	db, err := config.DBConn()
-	if err != nil {
-		log.Println(err)
+	db := config.GetDB() // Obtain the database connection from the middleware
+	if db == nil {
+		log.Println("Failed to get database connection")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	var checkUser *sql.Rows
 	var err2 error
@@ -126,9 +125,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Add("Set-Cookie", "mycookie="+sessionID+"; Max-Age=300")
-		
+
 		fmt.Println("suunaloggeduser")
-		
+
 		fmt.Println("Redirecting to the feed page")
 		http.Redirect(w, r, "/feed", http.StatusSeeOther)
 		return
