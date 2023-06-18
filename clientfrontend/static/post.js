@@ -1,5 +1,5 @@
 function getPosts() {
-    fetch('/api/posts')
+    fetch('/posts')
       .then(response => response.json())
       .then(posts => {
         // Handle the response data (posts)

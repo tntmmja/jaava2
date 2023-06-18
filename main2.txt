@@ -7,13 +7,18 @@ import (
 
 	"github.com/tntmmja/jaava2/backend/config"
 	"github.com/tntmmja/jaava2/backend/data"
+
 	"github.com/tntmmja/jaava2/backend/handlers"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/gorilla/mux"
+	//
 )
 
 func main() {
 	r := mux.NewRouter()
+	SetRoutes(r)
 
 	// Create a new WebSocketManager instance
 	manager := config.NewWebSocketManager()
@@ -30,28 +35,57 @@ func main() {
 
 	fmt.Println("Connected main to the database!")
 
-	// Serve static files
-	staticDir := "./clientfrontend/static/"
-	r.PathPrefix(staticDir).Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("."+staticDir))))
+	// // Initialize and start the WebSocket manager
+	// WebSocketManager := config.NewWebSocketManager()
+	// go WebSocketManager.Run()
 
-	// Serve index.html
-	r.HandleFunc("/", IndexHandler)
+	//probably cors is not needed if vue is not used
 
-	// Set routes
-	SetRoutes(r)
+	// c := cors.New(cors.Options{
+	// 	AllowedOrigins: []string{"http://localhost:8083"},
+	// })
+	// handler := c.Handler(r)
 
+	//log.Fatal(http.ListenAndServe("localhost:8082", handler))
 	// Start the HTTP server
 	log.Println("Server is running on http://localhost:8082")
-	err2 := http.ListenAndServe(":8082", r)
+	err2 := http.ListenAndServe(":8082", nil)
 	if err2 != nil {
 		log.Fatal("Server failed:", err2)
 	}
+
 }
 
-// IndexHandler serves the index.html file
+// HomeHandler handles the request for the root URL
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./clientfrontend/templates/index.html")
 }
+
+// // HomeHandler handles the request for the root URL
+// func HomeHandler(w http.ResponseWriter, r *http.Request) {
+// 	// Construct the absolute file path to the index.html file
+// 	indexPath := path.Join(".", "clientfrontend", "templates", "index.html")
+// 	http.ServeFile(w, r, indexPath)
+// }
+
+// // option 3
+// type customFileSystem struct {
+// 	root http.FileSystem
+// }
+
+// func (fs *customFileSystem) Open(name string) (http.File, error) {
+// 	f, err := fs.root.Open(name)
+// 	if os.IsNotExist(err) {
+// 		// If the requested file does not exist, serve the index.html file instead
+// 		return fs.root.Open("index.html")
+// 	}
+// 	return f, err
+// }
+// func HomeHandler(w http.ResponseWriter, r *http.Request) {
+// 	fileServer := http.FileServer(&customFileSystem{http.Dir("clientfrontend/templates")})
+// 	fileServer.ServeHTTP(w, r)
+// }
+// //end option 3
 
 var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/", IndexHandler).Methods("GET")

@@ -1,24 +1,120 @@
+// Define the routes
+const routes = [
+  { path: '/', component: Home },
+  { path: '/register', component: Register },
+  { path: '/login', component: Login },
+];
 
-document.addEventListener('DOMContentLoaded', function() {
-  const appDiv = document.getElementById('app');
-  
-  const registerButton = document.createElement('button');
-  registerButton.classList.add('button');
-  registerButton.textContent = 'Register';
-  registerButton.addEventListener('click', function() {
-      navigateTo('/register');
-  });
-  appDiv.appendChild(registerButton);
-  
-  const loginButton = document.createElement('button');
-  loginButton.classList.add('button');
-  loginButton.textContent = 'Login';
-  loginButton.addEventListener('click', function() {
-      navigateTo('/login');
-  });
-  appDiv.appendChild(loginButton);
+// Function to render a component based on the current route
+function renderComponent() {
+  const path = window.location.pathname;
+  const route = routes.find(r => r.path === path);
+
+  if (route && route.component) {
+    const contentDiv = document.getElementById('content');
+    contentDiv.innerHTML = ''; // Clear the content div
+    const component = new route.component();
+    contentDiv.appendChild(component.render());
+  }
+}
+
+// Home component
+class Home {
+  render() {
+    const div = document.createElement('div');
+    div.innerHTML = '<h1>Welcome to the Index Page</h1>';
+    return div;
+  }
+}
+
+// Register component
+class Register {
+  render() {
+    const div = document.createElement('div');
+    div.innerHTML = '<h1>Register Page</h1>';
+    return div;
+  }
+}
+
+// Login component
+class Login {
+  render() {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <h1>Login Page</h1>
+      <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+      </form>
+    `;
+    return div;
+  }
+}
+
+// Function to handle navigation
+function navigateTo(url) {
+  window.history.pushState(null, null, url);
+  renderComponent();
+}
+
+// Event listener for popstate event (browser back/forward buttons)
+window.addEventListener('popstate', () => {
+  renderComponent();
 });
 
-function navigateTo(url) {
-  window.location.href = url;
+// Event listener for document load
+document.addEventListener('DOMContentLoaded', () => {
+  renderComponent();
+
+  const registerButton = document.createElement('button');
+  registerButton.textContent = 'Register';
+  registerButton.addEventListener('click', () => {
+    navigateTo('/register');
+  });
+
+  const redirectToRegisterButton = document.createElement('button');
+  redirectToRegisterButton.textContent = 'Go to Register';
+  redirectToRegisterButton.addEventListener('click', () => {
+    navigateTo('/register');
+  });
+
+  const appDiv = document.getElementById('app');
+  appDiv.appendChild(registerButton);
+  appDiv.appendChild(redirectToRegisterButton);
+
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    loginUser();
+  });
+});
+
+function loginUser() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  const data = {
+    username: username,
+    password: password
+  };
+
+  fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Handle the response data
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 }

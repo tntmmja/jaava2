@@ -3,17 +3,24 @@
 <head>
     <meta charset="utf-8">
     <title>Real time forum</title>
-   
     <link rel="stylesheet" type="text/css" href="./static/styles.css">
-    
-   
 </head>
 <body>
     <div id="app">
         <h1>Welcome to the Index Page</h1>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+            <br>
+            <button class="button" type="submit">Login</button>
+        </form>
+        <a href="/register">Go to Register</a>
     </div>
 
-    
+    <script src="static/main.js"></script>
     <script src="static/registration.js"></script>
     <script src="static/login.js"></script>
     <script src="static/feed.js"></script>
@@ -21,9 +28,5 @@
     <script src="static/comment.js"></script>
     <script src="static/messages.js"></script>
     <script src="static/websocketMessaging.js"></script>
-
-    <script src="static/main.js"></script>
-
-   
 </body>
 </html>
