@@ -22,7 +22,7 @@ function renderComponent() {
 class Home {
   render() {
     const div = document.createElement('div');
-    div.innerHTML = '<h1>Welcome to the Index Page</h1>';
+    div.innerHTML = '<h1>Welcome to the Home</h1>';
     return div;
   }
 }
@@ -31,8 +31,33 @@ class Home {
 class Register {
   render() {
     const div = document.createElement('div');
-    div.innerHTML = '<h1>Register Page</h1>';
+    div.innerHTML = `
+      <h1>Register Page</h1>
+      <form id="registerForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <button type="submit">Register</button>
+      </form>
+    `;
+
     return div;
+  }
+
+  componentDidMount() {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+      registerForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        registerUser();
+      });
+    }
   }
 }
 
@@ -56,6 +81,34 @@ class Login {
   }
 }
 
+// Function to handle registration form submission
+function registerUser() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value;
+
+  const data = {
+    username: username,
+    password: password,
+    email: email
+  };
+
+  fetch('/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Handle the response data
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
 // Function to handle navigation
 function navigateTo(url) {
   window.history.pushState(null, null, url);
@@ -67,7 +120,6 @@ window.addEventListener('popstate', () => {
   renderComponent();
 });
 
-// Event listener for document load
 document.addEventListener('DOMContentLoaded', () => {
   renderComponent();
 

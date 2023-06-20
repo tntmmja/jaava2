@@ -7,7 +7,7 @@
 </head>
 <body>
     <div id="app">
-        <h1>Welcome to the Index Page</h1>
+        <h1>Welcome</h1>
         <form id="loginForm">
             <label for="username">Username:</label>
             <input type="text" id="username" required>
@@ -28,5 +28,39 @@
     <script src="static/comment.js"></script>
     <script src="static/messages.js"></script>
     <script src="static/websocketMessaging.js"></script>
+    <script>
+    // Function to handle navigation
+    function navigateTo(url) {
+      window.history.pushState(null, null, url);
+      renderComponent();
+    }
+
+    // Render the component based on the current route
+    function renderComponent() {
+      const path = window.location.pathname;
+      const appDiv = document.getElementById('app');
+
+      if (path === '/register') {
+        // Render the registration form component
+        const registerForm = new RegisterForm();
+        appDiv.innerHTML = '';
+        appDiv.appendChild(registerForm.render());
+      } else {
+        // Render other components based on the route
+        // ...
+      }
+    }
+
+    // Event listener for popstate event (browser back/forward buttons)
+    window.addEventListener('popstate', () => {
+      renderComponent();
+    });
+
+    // Initial rendering of the component
+    document.addEventListener('DOMContentLoaded', () => {
+      renderComponent();
+    });
+</script>
+
 </body>
 </html>
