@@ -1,9 +1,26 @@
+// // Create custom headers
+// const headers = {
+//   "Custom-Header-1": "Value1",
+//   "Custom-Header-2": "Value2"
+// };
+
+// // Convert the headers object to a string
+// const headersString = Object.keys(headers)
+//   .map(key => `${key}: ${headers[key]}`)
+//   .join("\n");
+
+
+
+
+
+
 // Create a WebSocket connection
-const socket = new WebSocket("ws://localhost:8082/socket");
+const socket = new WebSocket("ws://localhost:8082/loggedin");
 
 // Event handler for WebSocket connection open
 socket.onopen = () => {
   console.log("WebSocket connection established");
+  console.log("Connection headers:", socket.extensions, socket.protocol); // Log the connection headers
   // Additional initialization or actions after connection is open
 };
 
@@ -27,10 +44,10 @@ function sendMessage(message) {
   // Additional actions after sending the message
 }
 
-// Example usage: sending a message
+// Example message
 sendMessage("Hello, server!");
 
-// Example usage: handling user input and sending messages
+// Example handling user input and sending messages
 const inputElement = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
 

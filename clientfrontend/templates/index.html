@@ -8,7 +8,7 @@
 <body>
     <div id="app">
         <h1>Welcome</h1>
-        <form id="loginForm">
+        <form id="loginForm" action="/login" method="POST" onsubmit="loginUser(event)">
             <label for="username">Username:</label>
             <input type="text" id="username" required>
             <br>
@@ -18,9 +18,10 @@
             <button class="button" type="submit">Login</button>
         </form>
         <a href="/register">Go to Register</a>
+        <button id="logoutButton">Logout</button>
     </div>
 
-    <script src="static/main.js"></script>
+  
     <script src="static/registration.js"></script>
     <script src="static/login.js"></script>
     <script src="static/feed.js"></script>
@@ -28,6 +29,8 @@
     <script src="static/comment.js"></script>
     <script src="static/messages.js"></script>
     <script src="static/websocketMessaging.js"></script>
+    <script src="static/logout.js"></script>
+    <script src="static/main.js"></script>
     <script>
     // Function to handle navigation
     function navigateTo(url) {

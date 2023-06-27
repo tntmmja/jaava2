@@ -19,7 +19,7 @@
 -- DROP TABLE IF EXISTS user;
 
 -- DELETE FROM user WHERE id BETWEEN 2 AND 4;
-
+ 	DELETE FROM user WHERE id BETWEEN 6 AND 6;
 -- INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
 -- INSERT INTO posts (user_id, title, text, created_at) VALUES (1, 'My last Post', 'back again!', '2023-06-03 12:35:56');
 -- ALTER TABLE user RENAME COLUMN username TO nickname;
@@ -31,8 +31,7 @@
 -- 	title VARCHAR NOT NULL,
 -- 	text VARCHAR NOT NULL,
 -- 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
--- 	like VARCHAR,
--- 	dislike VARCHAR,
+
 --     FOREIGN KEY (user_id) REFERENCES user(id)
 --     );
 
@@ -47,15 +46,15 @@
 --     FOREIGN KEY (receiver_id) REFERENCES user (id)
 -- );
 
--- Create comments table
-CREATE TABLE IF NOT EXISTS comments (
-	id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-	user_id INTEGER NOT NULL,
-    post_id INTEGER NOT NULL,
-	text VARCHAR NOT NULL,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	    FOREIGN KEY (user_id) REFERENCES user(id)
-    );
+-- -- Create comments table
+-- CREATE TABLE IF NOT EXISTS comments (
+-- 	id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+-- 	user_id INTEGER NOT NULL,
+--     post_id INTEGER NOT NULL,
+-- 	text VARCHAR NOT NULL,
+-- 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+-- 	    FOREIGN KEY (user_id) REFERENCES user(id)
+--     );
 
 
 -- deleted column dislike

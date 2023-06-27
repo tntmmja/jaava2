@@ -1,7 +1,7 @@
 package data
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,38 +24,38 @@ type User struct {
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Submitting registration")
-
+	html := `
+	<h1>Registration Form</h1>
+	<form id="registration-form" method="POST" action="/register">
+		<label for="nickname">Nickname:</label>
+		<input type="text" id="nickname" name="nickname"><br><br>
+		
+		<label for="age">Age:</label>
+		<input type="number" id="age" name="age"><br><br>
+		
+		<label for="gender">Gender:</label>
+		<input type="text" id="gender" name="gender"><br><br>
+		
+		<label for="firstName">First Name:</label>
+		<input type="text" id="firstName" name="firstName"><br><br>
+		
+		<label for="lastName">Last Name:</label>
+		<input type="text" id="lastName" name="lastName"><br><br>
+		
+		<label for="email">E-mail:</label>
+		<input type="email" id="email" name="email"><br><br>
+		
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password"><br><br>
+		
+		<input type="submit" value="Register">
+	</form>
+	<a href="/">Go to Login</a>
+	`
 	if r.Method == http.MethodGet {
 		// Serve the registration form
 		// Construct and return the registration form HTML
-		html := `
-		<h1>Registration Form</h1>
-		<form id="registration-form" method="POST" action="/register">
-			<label for="nickname">Nickname:</label>
-			<input type="text" id="nickname" name="nickname"><br><br>
-			
-			<label for="age">Age:</label>
-			<input type="number" id="age" name="age"><br><br>
-			
-			<label for="gender">Gender:</label>
-			<input type="text" id="gender" name="gender"><br><br>
-			
-			<label for="firstName">First Name:</label>
-			<input type="text" id="firstName" name="firstName"><br><br>
-			
-			<label for="lastName">Last Name:</label>
-			<input type="text" id="lastName" name="lastName"><br><br>
-			
-			<label for="email">E-mail:</label>
-			<input type="email" id="email" name="email"><br><br>
-			
-			<label for="password">Password:</label>
-			<input type="password" id="password" name="password"><br><br>
-			
-			<input type="submit" value="Register">
-		</form>
-		<a href="/">Go to Login</a>
-		`
+		
 
 		w.Header().Set("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
@@ -122,22 +122,28 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Send a response indicating successful registration
-		response := map[string]interface{}{
-			"message": "Registration successful",
-		}
-		// Encode the response as JSON
-		jsonResponse, err := json.Marshal(response)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		// Set the response headers
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		// Write the JSON response
-		w.Write(jsonResponse)
+		// // Send a response indicating successful registration
+		// response := map[string]interface{}{
+		// 	"message": "Registration successful",
+		// }
+		// // Encode the response as JSON
+		// jsonResponse, err := json.Marshal(response)
+		// if err != nil {
+		// 	log.Println(err)
+		// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		// 	return
+		// }
+		// // Set the response headers
+		// w.Header().Set("Content-Type", "application/json")
+		// w.WriteHeader(http.StatusOK)
+		// // Write the JSON response
+		// w.Write(jsonResponse)
+
+		 // Send the success message
+		 fmt.Fprint(w, html)
+		 fmt.Fprint(w, "<p>Registration successful</p>")
+
+		return
 
 	} else {
 		// Return a Method Not Allowed response for other HTTP methods

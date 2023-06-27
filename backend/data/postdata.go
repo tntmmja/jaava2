@@ -17,8 +17,7 @@ type Post struct {
 	Title     string    `json:"title"`
 	Text      string    `json:"text"`
 	CreatedAt time.Time `json:"created_at"`
-	Likes     *int      `json:"like"`
-	Dislikes  *int      `json:"dislike"`
+	
 }
 
 // CreatePost creates a new post in the database
@@ -58,7 +57,7 @@ func GetPosts() ([]Post, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, user_id, title, text, created_at, like, dislike FROM posts")
+	rows, err := db.Query("SELECT id, user_id, title, text, created_at FROM posts")
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +67,7 @@ func GetPosts() ([]Post, error) {
 
 	for rows.Next() {
 		var post Post
-		err = rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt, &post.Likes, &post.Dislikes)
+		err = rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -92,7 +91,7 @@ func GetPost(postID string) (*Post, error) {
 	defer db.Close()
 
 	var post Post
-	err := db.QueryRow("SELECT id, user_id, title, text, created_at, like, dislike FROM posts WHERE id = ?", postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt, &post.Likes, &post.Dislikes)
+	err := db.QueryRow("SELECT id, user_id, title, text, created_at FROM posts WHERE id = ?", postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Text, &post.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Post not found

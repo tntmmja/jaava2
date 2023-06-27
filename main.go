@@ -7,7 +7,7 @@ import (
 
 	"github.com/tntmmja/jaava2/backend/config"
 	"github.com/tntmmja/jaava2/backend/data"
-	// "github.com/tntmmja/jaava2/backend/handlers"
+	"github.com/tntmmja/jaava2/backend/handlers"
 
 	"github.com/gorilla/mux"
 )
@@ -15,10 +15,10 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	// Create a new WebSocketManager instance
-	manager := config.NewWebSocketManager()
+	// Initialize the WebSocket manager
+	manager := config.Manager
 
-	// Start the WebSocket manager
+	// Start the WebSocket manager in a separate goroutine
 	go manager.Run()
 
 	// Initialize the database connection
@@ -56,22 +56,23 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 var SetRoutes = func(router *mux.Router) {
 	router.HandleFunc("/", IndexHandler)
 
-	// router.HandleFunc("/socket", config.HandleWebSocket)
+	
 
 	router.HandleFunc("/register", data.RegisterHandler).Methods("GET","POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./clientfrontend/static/"))))
 
-	// router.HandleFunc("/login", handlers.LoginHandler).Methods(("POST"))
-	// router.HandleFunc("/create-post", handlers.CreatePostHandler).Methods("POST")
-	// router.HandleFunc("/post/{id}", handlers.PostHandler).Methods("GET")
-	// router.HandleFunc("/create-comment", handlers.CreateCommentHandler).Methods("POST")
-	// router.HandleFunc("/comments/{id}", handlers.GetCommentsByPostIDHandler).Methods("GET")
-	// router.HandleFunc("/comment/{id}", handlers.GetCommentHandler).Methods("GET")
-	// router.HandleFunc("/send-message", handlers.SendMessageHandler).Methods("POST")
-	// router.HandleFunc("/messages/{senderID}/{receiverID}", handlers.GetMessagesHandler).Methods("GET")
-	// router.HandleFunc("/messages/{senderID}/{receiverID}/more", handlers.GetMoreMessagesHandler).Methods("GET")
+	router.HandleFunc("/login", handlers.LoginHandler).Methods(("POST"))
+	router.HandleFunc("/create-post", handlers.CreatePostHandler).Methods("POST")
+	router.HandleFunc("/post/{id}", handlers.PostHandler).Methods("GET")
+	router.HandleFunc("/create-comment", handlers.CreateCommentHandler).Methods("POST")
+	router.HandleFunc("/comments/{id}", handlers.GetCommentsByPostIDHandler).Methods("GET")
+	router.HandleFunc("/comment/{id}", handlers.GetCommentHandler).Methods("GET")
+	router.HandleFunc("/send-message", handlers.SendMessageHandler).Methods("POST")
+	router.HandleFunc("/messages/{senderID}/{receiverID}", handlers.GetMessagesHandler).Methods("GET")
+	router.HandleFunc("/messages/{senderID}/{receiverID}/more", handlers.GetMoreMessagesHandler).Methods("GET")
 
-	//router.HandleFunc("/loggedin", handlers.LoggedInHandler)
+	router.HandleFunc("/loggedin", handlers.LoggedInHandler).Methods("GET")
+	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
 
 	//router.HandleFunc("/feed", handlers.FeedHandler).Methods("GET", "POST")
 	// router.HandleFunc("/filter", handlers.FilterHandler).Methods("GET") // Add this line for the FilterHandler

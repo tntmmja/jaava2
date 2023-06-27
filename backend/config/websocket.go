@@ -1,20 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{
-	// ReadBufferSize:  1024,
-	// WriteBufferSize: 1024,
-	// CheckOrigin: func(r *http.Request) bool {
-	// 	return true
-	// },
-}
 
 // WebSocketManager manages WebSocket connections
 type WebSocketManager struct {
@@ -62,44 +52,59 @@ func (m *WebSocketManager) Run() {
 	}
 }
 
-func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("fn websocket")
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println("WebSocket upgrade failed:", err)
-		return
-	}
-	defer conn.Close()
 
-	
-	// Create a new WebSocketManager instance
-	manager := NewWebSocketManager()
-
-	// Add the WebSocket connection to the manager
-	manager.AddConnection(conn)
+//without the Manager variable won't be able to access
+// the WebSocketManager instance from other parts of the code.
+// Manager holds an instance of the WebSocketManager
+var Manager = NewWebSocketManager()
 
 
-	// Handle incoming WebSocket messages
-	for {
-		// Read the message from the WebSocket connection
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("WebSocket read failed:", err)
-			break
-		}
 
-		// Process the received message
-		log.Println("Received message:", string(message))
 
-		// Write a response back to the WebSocket connection
-		response := []byte("Received your message")
-		err = conn.WriteMessage(websocket.TextMessage, response)
-		if err != nil {
-			log.Println("WebSocket write failed:", err)
-			break
-		}
-	}
 
-	// Remove the WebSocket connection from the manager
-	manager.RemoveConnection(conn)
-}
+
+// this part is now handled in LoggedInHandler
+
+// // WebSocketUpgrader is the WebSocket upgrader configuration
+// var WebSocketUpgrader = websocket.Upgrader{
+// 	// ReadBufferSize:  1024,
+// 	// WriteBufferSize: 1024,
+// 	// CheckOrigin: func(r *http.Request) bool {
+// 	// 	return true
+// 	// },
+// }
+
+// // HandleWebSocket upgrades the HTTP connection to a WebSocket connection and manages it
+// func HandleWebSocket(manager *WebSocketManager, w http.ResponseWriter, r *http.Request) {
+// 	conn, err := WebSocketUpgrader.Upgrade(w, r, nil)
+// 	if err != nil {
+// 		log.Println("WebSocket upgrade failed:", err)
+// 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	defer conn.Close()
+
+// 	// Add the WebSocket connection to the manager
+// 	manager.AddConnection(conn)
+
+// 	// Handle incoming WebSocket messages
+// 	for {
+// 		_, message, err := conn.ReadMessage()
+// 		if err != nil {
+// 			log.Println("WebSocket read failed:", err)
+// 			break
+// 		}
+
+// 		log.Println("Received message:", string(message))
+
+// 		response := []byte("Received your message")
+// 		err = conn.WriteMessage(websocket.TextMessage, response)
+// 		if err != nil {
+// 			log.Println("WebSocket write failed:", err)
+// 			break
+// 		}
+// 	}
+
+// 	// Remove the WebSocket connection from the manager
+// 	manager.RemoveConnection(conn)
+// }

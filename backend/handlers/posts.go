@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/gorilla/mux"
 	"github.com/tntmmja/jaava2/backend/data"
@@ -102,10 +102,22 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-// FeedHandler retrieves the posts to display in the feed
+// FeedHandler retrieves the posts and categories to display in the feed
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("feedhandler laks kaima")
 	switch r.Method {
 	case http.MethodGet:
+		// Check if the user is logged in
+		sessionID := findSessionCookie(r)
+		if sessionID == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// Perform additional authorization checks if necessary
+		// For example, validate the session ID against the database or session store,
+		// also check user roles or permissions to determine access rights
+
 		// Retrieve the posts from the database
 		posts, err := data.GetPosts()
 		if err != nil {
@@ -114,29 +126,23 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Render the feed.html template with the posts data
-		tmpl, err := template.ParseFiles("./clientfrontend/templates/feed.html")
+		// Create a response map with the posts data
+		response := map[string]interface{}{
+			"posts": posts,
+		}
+
+		// Convert the response map to JSON
+		jsonResponse, err := json.Marshal(response)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
-		// Pass the posts data and other necessary data to the template
-		data := struct {
-			Posts []data.Post
-			Title string
-		}{
-			Posts: posts,
-			Title: "Feed",
-		}
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
+		// Set the response headers and write the JSON response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(jsonResponse)
 
 	case http.MethodPost:
 		// Handle POST request to create a new post
@@ -147,6 +153,22 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			return
 		}
+
+		// Set the user ID for the post
+		sessionID := findSessionCookie(r)
+		if sessionID == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		userID, err := data.GetUserIDBySessionID(sessionID)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		post.UserID = userID
 
 		// Create the post in the database
 		err = data.CreatePost(&post)
@@ -176,9 +198,6 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
-
-
-
 
 //findSessionCookie is in handle_logged.go now
 // func findSessionCookie(r *http.Request) string {

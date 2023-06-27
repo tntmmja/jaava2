@@ -55,7 +55,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Parameters can't be empty", http.StatusBadRequest)
 		return
 	}
-	// Perform database operations to validate login credentials
+
+
+	
+
+// Perform database operations to validate login credentials
 	db := config.GetDB() // Obtain the database connection from the middleware
 	if db == nil {
 		log.Println("Failed to get database connection")
@@ -102,13 +106,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var resp MyResponse
+	
+
+
 	errf := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Password))
 	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
 		fmt.Println("Invalid password")
 		http.Error(w, "Invalid password", http.StatusUnauthorized)
 	} else {
+
+
 		sessionID := uuid.New().String()
 		fmt.Println("loginsessionid1", sessionID)
+
 
 		upt, err := db.Prepare("UPDATE user SET sessionID = ? WHERE id = ?")
 
@@ -123,20 +134,28 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+			
 
 		w.Header().Add("Set-Cookie", "mycookie="+sessionID+"; Max-Age=300")
 
-		fmt.Println("suunaloggeduser")
+		fmt.Println("login handleri suunaloggeduser")
 
-		fmt.Println("Redirecting to the feed page")
-		http.Redirect(w, r, "/feed", http.StatusSeeOther)
-		return
+		fmt.Println("Redirecting to the loggedin page")
+		resp = MyResponse{
+			Success:   true,
+			SessionID: sessionID,
+		}
+
+		//http.Redirect(w, r, "/loggedin", http.StatusSeeOther)
+		//return
+
+		
 	}
 
-	var resp = MyResponse{
-		Success:   true,
-		SessionID: login.SessionID, // Update with the correct variable name
-	}
+	// var resp = MyResponse{
+	// 	Success:   true,
+	// 	SessionID: login.SessionID, // Update with the correct variable name
+	// }
 
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
@@ -146,6 +165,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResp)
+
+
+
 }
 
 type MyResponse struct {

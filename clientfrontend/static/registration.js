@@ -1,3 +1,4 @@
+// it is not used as html is in registerdata.go
 // Perform user registration
 function registerUser() {
     // Get form input values
@@ -30,15 +31,15 @@ function registerUser() {
     })
       .then(response => response.json())
       .then(data => {
-        // Handle the response from the backend
-        if (data.message === 'Registration successful') {
-          // Registration successful, redirect to the login page
-          window.location.href = '/login.html';
-        } else {
-          // Display the error message returned from the backend
-          const errorMessage = document.getElementById('errorMessage');
-          errorMessage.innerText = data.message;
-        }
+        // // Handle the response from the backend
+        // if (data.message === 'Registration successful') {
+        //   // Registration successful, redirect to the login page
+        //   window.location.href = '/login.html';
+        // } else {
+        //   // Display the error message returned from the backend
+        //   const errorMessage = document.getElementById('errorMessage');
+        //   errorMessage.innerText = data.message;
+        // }
       })
       .catch(error => {
         console.error('Error:', error);
